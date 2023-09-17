@@ -1,0 +1,28 @@
+port: 80
+host: 0.0.0.0
+root: ~
+prefix: "/"
+
+scope: .
+modify: true
+rules: []
+
+cors:
+  allow_origins:
+    - "localhost"
+  allow_credentials: true
+
+users:
+  - username: admin
+    password: admin
+  - username: bmstu
+    password: qwerty12!
+    scope: /clients/bmstu
+    modify: true
+    rules:
+      - regex: false
+        allow: false
+        path: /admin
+      - path: /public/access
+        modify: true
+
