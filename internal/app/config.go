@@ -5,11 +5,11 @@ import (
 	"github.com/go-yaml/yaml"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/net/webdav"
 	"log"
 	"net/http"
 	"os"
-	"practice/internal/pkg/filesystem"
 	"practice/internal/pkg/users"
 	"strings"
 )
@@ -38,7 +38,9 @@ func NewConfig(path string) (Config, error) {
 
 	cfg.Handler = &webdav.Handler{
 		Prefix:     cfg.Prefix,
-		FileSystem: filesystem.New(cfg.Root),
+		FileSystem: webdav.NewMemFS(),
+		LockSystem: webdav.NewMemLS(),
+		Logger:     NewLogger(logrus.New()),
 	}
 
 	return cfg, nil
@@ -72,6 +74,16 @@ func (c Config) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	u.Handler.ServeHTTP(w, r)
+}
+
+func NewLogger(log *logrus.Logger) func(*http.Request, error) {
+	return func(r *http.Request, err error) {
+		log.WithFields(logrus.Fields{
+			"uri":     r.RequestURI,
+			"host":    r.Host,
+			"headers": r.Header,
+		}).Error(err)
+	}
 }
 
 type responseWriterNoBody struct {

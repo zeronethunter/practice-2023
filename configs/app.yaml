@@ -1,7 +1,7 @@
 port: 80
 host: 0.0.0.0
-root: ~
-prefix: "/"
+root: "C:/Users/zenehu/webdav"
+prefix: ""
 
 scope: .
 modify: true

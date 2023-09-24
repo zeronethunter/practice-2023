@@ -26,11 +26,10 @@ func main() {
 
 	e := echo.New()
 	e.Use(middleware.CORSWithConfig(cfg.CORSConfig))
-	e.Use(middleware.Logger())
 	e.Use(middleware.BasicAuth(auth.NewBasicAuth(cfg.Users)))
 
 	h := app.NewHandler(cfg)
-	e.Any("/", h.HandlerWebDAV)
+	e.Any("*", h.HandlerWebDAV)
 
 	if err = e.Start(cfg.Host + ":" + strconv.Itoa(cfg.Port)); err != nil {
 		log.Fatal(errors.Wrap(err, "server stopped with error"))
